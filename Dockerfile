@@ -21,6 +21,7 @@ ARG SPARK_VERSION=
 
 RUN set -eux; \
     echo ${SPARK_VERSION}; \
-    mvn clean package -DskipTests -Pspark-${SPARK_VERSION:0:3} -Phadoop-2.7 -Pyarn -Ppyspark -Pscala-${SCALA_VERSION}
+    SPARK_NO_PATCH_VERSION=$(echo ${SPARK_VERSION} | sed -E 's/([[:digit:]]+)\.([[:digit:]]+)\.([[:digit:]]+)/\1.\2/g'); \
+    mvn clean package -DskipTests -Pspark-${SPARK_NO_PATCH_VERSION} -Phadoop-2.7 -Pyarn -Ppyspark -Pscala-${SCALA_VERSION}
 
 FROM guangie88/spark:${SPARK_VERSION}_java-${JAVA_VERSION}
