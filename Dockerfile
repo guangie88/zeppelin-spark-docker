@@ -10,7 +10,7 @@ RUN set -eux; \
     apt-get install --no-install-recommends -y git ca-certificates
 
 RUN set -eux; \
-    git clone https://github.com/apache/zeppelin.git --depth 1 -b ${ZEPPELIN_REV}
+    git clone https://github.com/apache/zeppelin.git -b ${ZEPPELIN_REV}
 
 RUN set -eux; \
     cd zeppelin; \
@@ -19,9 +19,13 @@ RUN set -eux; \
 ARG SPARK_VERSION=
 # ENV SPARK_VERSION=${SPARK_VERSION}
 
+ARG ZEPPELIN_SPARK_VERSION=2.0
+ARG ZEPPELIN_HADOOP_VERSION=2.4
+
 RUN set -eux; \
     echo ${SPARK_VERSION}; \
     SPARK_NO_PATCH_VERSION=$(echo ${SPARK_VERSION} | sed -E 's/([[:digit:]]+)\.([[:digit:]]+)\.([[:digit:]]+)/\1.\2/g'); \
-    mvn clean package -DskipTests -Pspark-${SPARK_NO_PATCH_VERSION} -Phadoop-2.7 -Pyarn -Ppyspark -Pscala-${SCALA_VERSION}
+    cd zeppelin; \
+    mvn clean package -DskipTests -Pspark-${ZEPPELIN_SPARK_VERSION} -Phadoop-${ZEPPELIN_HADOOP_VERSION} -Pscala-${SCALA_VERSION}
 
 FROM guangie88/spark:${SPARK_VERSION}_java-${JAVA_VERSION}
